@@ -8,27 +8,25 @@ class PlaceLeftFilter(admin.SimpleListFilter):
     parameter_name = 'places_left_filter'
 
     def lookups(self, request, model_admin):
-        filter_list = [
-            ('0', '<=50%'),
-            ('1', '>50%'),
-            ('2', 'sold-out')
-        ]
-        return filter_list
-
+        return models.Event.FULLNESS_VARIANTS
 
     def queryset(self, request, queryset):
         filter_value = self.value()
-        for obj in queryset:
-            new_obj = obj
-            new_obj.res=models.Event.result(obj)
-            new_obj.save()
-
-        if filter_value == '0':
-            return queryset.filter(res__gte=0, res__lte=0.5)
-        elif filter_value == '1':
-            return queryset.filter(res__gt=0.5,res__lt=1)
-        elif filter_value == '2':
-            return queryset.filter(res=1)
+        if filter_value:
+            events_id = []
+            if filter_value == models.Event.FULLNESS_FREE:
+                for event in queryset:
+                    if event.get_fullness_legend() == models.Event.FULLNESS_LEGEND_FREE:
+                        events_id.append(event.id)
+            elif filter_value == models.Event.FULLNESS_MIDDLE:
+                for event in queryset:
+                    if event.get_fullness_legend() == models.Event.FULLNESS_LEGEND_MIDDLE:
+                        events_id.append(event.id)
+            elif filter_value == models.Event.FULLNESS_FULL:
+                for event in queryset:
+                    if event.get_fullness_legend() == models.Event.FULLNESS_LEGEND_FULL:
+                        events_id.append(event.id)
+            return queryset.filter(id__in=events_id)
         return queryset
 
 class ReviewInline(admin.TabularInline):

@@ -42,23 +42,42 @@ class Event(models.Model):
 
     display_enroll_count.short_description = 'Количество записей'
 
-    res = models.FloatField(blank=True)
+    FULLNESS_FREE = '1'
+    FULLNESS_MIDDLE = '2'
+    FULLNESS_FULL = '3'
+    FULLNESS_LEGEND_FREE = '<= 50%'
+    FULLNESS_LEGEND_MIDDLE = '> 50%'
+    FULLNESS_LEGEND_FULL = 'sold-out'
+    FULLNESS_VARIANTS = (
+        (FULLNESS_FREE, FULLNESS_LEGEND_FREE),
+        (FULLNESS_MIDDLE, FULLNESS_LEGEND_MIDDLE),
+        (FULLNESS_FULL, FULLNESS_LEGEND_FULL),
+    )
 
-    def result(self):
-        self.res = len(self.enrolls.all())/self.participants_number
-        return self.res
+    def get_enroll_count(self):
+        return self.enrolls.count()
+
+    def get_places_left(self):
+        return int(self.participants_number or 0) - self.get_enroll_count()
+
+    def get_fullness_legend(self, **kwargs):
+        legend = ''
+        if int(self.participants_number or 0) > 0:
+            legend = Event.FULLNESS_LEGEND_FREE
+            places_left = kwargs.get('places_left', None)
+            if places_left is None:
+                places_left = self.get_places_left()
+            if places_left == 0:
+                legend = Event.FULLNESS_LEGEND_FULL
+            elif places_left < self.participants_number / 2:
+                legend = Event.FULLNESS_LEGEND_MIDDLE
+        return legend
 
     def display_places_left(self):
-        col = self.participants_number-len(self.enrolls.all())
-        if col>= self.participants_number/2:
-            return f'{col}(<=50%)'
-        elif col< self.participants_number/2 and col !=0:
-            return f'{col}(>50%)'
-        elif col == 0:
-            return f'{col}(sold-out)'
+        places_left = self.get_places_left()
+        return f'{places_left} ({self.get_fullness_legend(places_left=places_left)})'
 
     display_places_left.short_description = 'Осталось мест'
-
 
     class Meta:
         verbose_name = 'Событие'
