@@ -47,7 +47,6 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = [PlaceLeftFilter, 'category', 'features', ]
     search_fields = ['title',]
     readonly_fields = ['display_enroll_count','display_places_left']
-    exclude = ['res']
     filter_horizontal = ['features',]
     inlines = [ReviewInline]
 
