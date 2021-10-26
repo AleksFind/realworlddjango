@@ -110,8 +110,8 @@
                                         <p data-test="is_private" class="badge bg-dark">Private</p>
                                     {%endif%}
                                     <h2 data-test="event_title">{{event.title}}</h2>
-                                    {% if event.get_rate %}
-                                    <p data-test="event_rate" class="badge bg-warning">{{event.get_rate|floatformat}}/5</p>
+                                    {% if event.rate %}
+                                    <p data-test="event_rate" class="badge bg-warning">{{event.rate|floatformat}}/5</p>
                                     {% else %}
                                     <p data-test="event_rate" class="badge bg-warning">Оценок ещё нет!</p>
                                     {% endif %}

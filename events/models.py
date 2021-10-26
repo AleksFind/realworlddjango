@@ -94,7 +94,7 @@ class Event(models.Model):
         return self.title
 
     @property
-    def get_rate(self):
+    def rate(self):
         reviews = self.reviews.all()
         sum,count = 0,0
         for rev in reviews:
