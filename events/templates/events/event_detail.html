@@ -130,8 +130,12 @@
                                             <button data-test="enroll"
                                                     type="submit"
                                                     class="btn btn-success"
-                                                    disabled>
-                                                Записаться
+                                                   {%if event.places_left == 0 %}
+                                                        disabled>
+                                                        Мест нет
+                                                    {% else %}
+                                                        >Записаться
+                                                    {% endif %}
                                             </button>
                                         </form>
                                         <a href="#" class="btn btn-primary me-2">
