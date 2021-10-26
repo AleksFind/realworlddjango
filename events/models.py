@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
+
 
 # Create your models here.
 class Feature(models.Model):
@@ -28,19 +31,6 @@ class Category(models.Model):
         return self.title
 
 class Event(models.Model):
-    title = models.CharField(max_length=200, blank=True, default='', verbose_name='Название')
-    description = models.TextField(blank=True, default='', verbose_name='Описание')
-    date_start = models.DateTimeField(verbose_name='Дата начала')
-    participants_number = models.PositiveSmallIntegerField(verbose_name='Количество участников')
-    is_private = models.BooleanField(default=False, verbose_name='Частное')
-    category = models.ForeignKey(Category,null=True,on_delete=models.CASCADE,related_name='events')
-    features = models.ManyToManyField(Feature)
-
-
-    def display_enroll_count(self):
-        return len(self.enrolls.all())
-
-    display_enroll_count.short_description = 'Количество записей'
 
     FULLNESS_FREE = '1'
     FULLNESS_MIDDLE = '2'
@@ -53,6 +43,22 @@ class Event(models.Model):
         (FULLNESS_MIDDLE, FULLNESS_LEGEND_MIDDLE),
         (FULLNESS_FULL, FULLNESS_LEGEND_FULL),
     )
+
+    title = models.CharField(max_length=200, blank=True, default='', verbose_name='Название')
+    description = models.TextField(blank=True, default='', verbose_name='Описание')
+    date_start = models.DateTimeField(verbose_name='Дата начала')
+    participants_number = models.PositiveSmallIntegerField(verbose_name='Количество участников')
+    is_private = models.BooleanField(default=False, verbose_name='Частное')
+    category = models.ForeignKey(Category,null=True,on_delete=models.CASCADE,related_name='events')
+    features = models.ManyToManyField(Feature)
+    logo = models.ImageField( blank=True, null=True)
+
+
+    def display_enroll_count(self):
+        return len(self.enrolls.all())
+
+    display_enroll_count.short_description = 'Количество записей'
+
 
     def get_enroll_count(self):
         return self.enrolls.count()
@@ -86,6 +92,24 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def get_rate(self):
+        reviews = self.reviews.all()
+        sum,count = 0,0
+        for rev in reviews:
+            sum += rev.rate
+            count += 1
+        return sum/count
+
+    @property
+    def logo_url(self):
+        return self.logo.url if self.logo else f'{settings.STATIC_URL}images/svg-icon/event.svg'
+
+    def get_absolute_url(self):
+        return reverse('events:event_detail', args=[str(self.pk)])
+
+
 
 
 class Enroll(models.Model):
