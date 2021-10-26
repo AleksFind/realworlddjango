@@ -130,7 +130,7 @@
                                             <button data-test="enroll"
                                                     type="submit"
                                                     class="btn btn-success"
-                                                   {%if event.places_left == 0 %}
+                                                   {%if event.get_places_left == 0 %}
                                                         disabled>
                                                         Мест нет
                                                     {% else %}
