@@ -103,7 +103,7 @@ class Event(models.Model):
         try:
             return round(sum/count,1)
         except:
-            return None
+            return 0
 
 
     @property
