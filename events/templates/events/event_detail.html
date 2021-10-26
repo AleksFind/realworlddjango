@@ -111,7 +111,7 @@
                                     {%endif%}
                                     <h2 data-test="event_title">{{event.title}}</h2>
                                     {% if event.rate %}
-                                    <p data-test="event_rate" class="badge bg-warning">{{event.rate|floatformat}}/5</p>
+                                    <p data-test="event_rate" class="badge bg-warning">{{event.rate}}/5</p>
                                     {% else %}
                                     <p data-test="event_rate" class="badge bg-warning">Оценок ещё нет!</p>
                                     {% endif %}
@@ -152,7 +152,7 @@
                                                 {{event.display_enroll_count|default:"0"}} из {{event.participants_number}}
                                             </h4>
                                             <p data-test="places_left">
-                                                {%if event.places_left == 0 %}
+                                                {%if event.get_places_left == 0 %}
                                                     осталось мест: мест нет
                                                 {%else%}
                                                     осталось мест: {{event.get_places_left}}

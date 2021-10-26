@@ -100,7 +100,11 @@ class Event(models.Model):
         for rev in reviews:
             sum += rev.rate
             count += 1
-        return sum/count
+        try:
+            return round(sum/count,1)
+        except:
+            return None
+
 
     @property
     def logo_url(self):
