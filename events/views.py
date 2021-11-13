@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Avg, F, Q, DecimalField, Prefetch
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, UpdateView, DeleteView, CreateView
@@ -27,44 +28,32 @@ class PermissionRequiredMixin:
 
 class EventListView(ListView):
     model = Event
-    template_name = 'events/event_list/html'
     paginate_by = 9
-    context_object_name = 'event_objects'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['heading'] = 'Cобытия'
         context['filter_form'] = EventFilterForm(self.request.GET)
         return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.event_qs(self)
+        queryset = queryset.prefetch_related('features')
+        queryset = queryset.annotate(enroll_count=Count('enrolls'))
         form = EventFilterForm(self.request.GET)
         if form.is_valid():
-            filter_category = form.cleaned_data['category']
-            filter_features = form.cleaned_data['features']
-            filter_start = form.cleaned_data['date_start']
-            filter_end = form.cleaned_data['date_end']
-            filter_private = form.cleaned_data['is_private']
-            filter_available = form.cleaned_data['is_available']
-            filter_title = form.cleaned_data['title']
-            if filter_title:
-                queryset = queryset.filter(title__icontains=filter_title)
-            if filter_category:
-                queryset = queryset.filter(category=filter_category)
-            if filter_features:
-                for feature in filter_features:
+            if form.cleaned_data['category']:
+                queryset = queryset.filter(category=form.cleaned_data['category'])
+            if form.cleaned_data['is_private']:
+                queryset = queryset.filter(is_private=form.cleaned_data['is_private'])
+            if form.cleaned_data['is_available']:
+                queryset = queryset.filter(enroll_count__lt=F('participants_number'))
+            if form.cleaned_data['date_start']:
+                queryset = queryset.filter(date_start__gte=form.cleaned_data['date_start'])
+            if form.cleaned_data['date_end']:
+                queryset = queryset.filter(date_start__lte=form.cleaned_data['date_end'])
+            if form.cleaned_data['features']:
+                for feature in form.cleaned_data['features']:
                     queryset = queryset.filter(features__in=[feature])
-            if filter_start:
-                queryset = queryset.filter(date_start__gt=filter_start)
-            if filter_end:
-                queryset = queryset.filter(date_start__lt=filter_end)
-            if filter_private:
-                queryset = queryset.filter(is_private=filter_private)
-            if filter_available:
-                queryset = queryset.filter(places_left__gt=0)
-
         return queryset.order_by('-pk')
 
 
