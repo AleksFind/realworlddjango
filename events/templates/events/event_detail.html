@@ -45,20 +45,11 @@
                                         {% csrf_token %}
                                             {{enroll_form}}
                                              <button data-test="enroll"
-                                                    type="submit"
-                                                    class="btn btn-success"
-                                                    {% if user in event|get_enroll_user %}
-                                                                disabled>
-                                                                Вы записаны
-                                                    {% else %}
-                                                                    {%if event.get_places_left == 0 %}
-                                                                        disabled>
-                                                                        Мест нет
-                                                                    {% else %}
-                                                                        >Записаться
-                                                                    {% endif %}
-                                                    {%endif%}
-                                            </button>
+                                                type="submit"
+                                                class="btn btn-success"
+                                                {% if places_left == 0 %}disabled{% endif %}>
+                                            {% if places_left > 0 %}Записаться{% else %}Мест нет{% endif %}
+                                        </button>
                                         </form>
                                         <a href="{% url 'events:event_update' event.pk %}" class="btn btn-primary me-2">
                                            <i class="bi bi-pencil-square"></i>Изменить
