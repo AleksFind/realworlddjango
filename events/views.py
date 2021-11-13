@@ -27,7 +27,7 @@ class PermissionRequiredMixin:
 
 class EventListView(ListView):
     model = Event
-    template_name = 'events/event_list/html'
+    template_name = 'events/event_list.html'
     paginate_by = 9
     context_object_name = 'event_objects'
 
