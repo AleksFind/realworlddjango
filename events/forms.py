@@ -51,9 +51,6 @@ class EnrollCreationForm(forms.ModelForm):
         user = cleaned_data.get('user')
         event = cleaned_data.get('event')
 
-        if Enroll.objects.filter(event=event).count() == event.participants_number:
-            raise forms.ValidationError(f'Места на {event} кончились, увы')
-
         if Enroll.objects.filter(user=user, event=event).exists():
             raise forms.ValidationError(f'Вы уже записаны на это событие. Отменить запись можно в профиле.')
 
