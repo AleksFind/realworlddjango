@@ -1,10 +1,8 @@
 import datetime
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+import json
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.db.models import Count, Avg, F, Q, DecimalField, Prefetch
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, UpdateView, DeleteView, CreateView
@@ -28,7 +26,9 @@ class PermissionRequiredMixin:
 
 class EventListView(ListView):
     model = Event
-    paginate_by = 9
+    template_name = 'events/event_list.html'  # необязательно, указать, если имя шаблона отличается от стандартного
+    context_object_name = 'event_objects'
+    paginate_by = 8
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -36,24 +36,121 @@ class EventListView(ListView):
         return context
 
     def get_queryset(self):
+
         queryset = super().get_queryset()
-        queryset = queryset.prefetch_related('features')
-        queryset = queryset.annotate(enroll_count=Count('enrolls'))
-        form = EventFilterForm(self.request.GET)
-        if form.is_valid():
-            if form.cleaned_data['category']:
-                queryset = queryset.filter(category=form.cleaned_data['category'])
-            if form.cleaned_data['is_private']:
-                queryset = queryset.filter(is_private=form.cleaned_data['is_private'])
-            if form.cleaned_data['is_available']:
-                queryset = queryset.filter(enroll_count__lt=F('participants_number'))
-            if form.cleaned_data['date_start']:
-                queryset = queryset.filter(date_start__gte=form.cleaned_data['date_start'])
-            if form.cleaned_data['date_end']:
-                queryset = queryset.filter(date_start__lte=form.cleaned_data['date_end'])
-            if form.cleaned_data['features']:
-                for feature in form.cleaned_data['features']:
-                    queryset = queryset.filter(features__in=[feature])
+        queryset = queryset.EvQuSet()
+
+        # обработка кнопки "Сбросить"
+        if self.request.GET.get('Delete', ''):
+            filter_dist = self.request.GET.copy()
+            # удалить 'filter' в сесии:
+            if 'filter' in self.request.session:
+                del self.request.session['filter']
+
+            # удаоить фильтры в запросах GET:
+            if 'date_start' in filter_dist:
+                del filter_dist['date_start']
+            if 'date_end' in filter_dist:
+                del filter_dist['date_end']
+            if 'category' in filter_dist:
+                del filter_dist['category']
+            if 'features' in filter_dist:
+                del filter_dist['features']
+            if 'is_private' in filter_dist:
+                del filter_dist['is_private']
+            if 'is_available' in filter_dist:
+                del filter_dist['is_available']
+            if 'page' in filter_dist:
+                del filter_dist['page']
+            if 'Delete' in filter_dist:
+                del filter_dist['Delete']
+
+            self.request.GET = filter_dist
+
+            return queryset.order_by('-pk')
+
+        # начало обработки запроса GET для запоминариня фильтров
+        filter_dist = {}
+        # если был переход по стриницам
+        page = self.request.GET.get('page', None)
+
+        if 'filter' in self.request.session:
+            filter_dist = self.request.session['filter']
+
+            if page:
+                # добавить 'page' к session['filter']
+                filter_dist.update({'page': page})
+            else:
+                if self.request.GET:
+                    # поностью обновить session['filter']
+                    del self.request.session['filter']
+                    filter_dist = self.request.GET.copy()
+
+            if len(filter_dist) > 0:
+                self.request.session['filter'] = filter_dist
+                self.request.GET = filter_dist
+        else:
+            filter_dist = self.request.GET.copy()
+        # конец обработки запроса GET для запоминариня фильтров
+
+        # обработка фильтров
+        if filter_dist.__contains__('category'):
+            filter_category = self.request.GET.get('category', '')
+            filter_dist['category'] = filter_category
+        else:
+            filter_category = None
+
+        if filter_dist.__contains__('features'):
+            q = json.loads(json.dumps(dict(filter_dist)))
+            filter_features = q['features']
+            filter_dist['features'] = filter_features
+        else:
+            filter_features = None
+
+        if filter_dist.__contains__('date_start'):
+            filter_date_start = self.request.GET.get('date_start', '')
+            filter_dist['date_start'] = filter_date_start
+        else:
+            filter_date_start = None
+
+        if filter_dist.__contains__('date_end'):
+            filter_date_end = self.request.GET.get('date_end', '')
+            filter_dist['date_end'] = filter_date_end
+        else:
+            filter_date_end = None
+
+        if filter_dist.__contains__('is_private'):
+            filter_is_private = self.request.GET.get('is_private', '')
+            filter_dist['is_private'] = filter_is_private
+        else:
+            filter_is_private = None
+
+        if filter_dist.__contains__('is_available'):
+            filter_is_available = self.request.GET.get('is_available', '')
+            filter_dist['is_available'] = filter_is_available
+        else:
+            filter_is_available = None
+
+        if page:
+            filter_dist['page'] = page
+
+        if len(filter_dist) > 0:
+            self.request.session['filter'] = filter_dist
+
+        if filter_category:
+            queryset = queryset.filter(category=filter_category)
+        if filter_features:
+            for feature in filter_features:
+                queryset = queryset.filter(features__in=feature)
+        if filter_date_start:
+            queryset = queryset.filter(date_start__gt=filter_date_start)
+        if filter_date_end:
+            queryset = queryset.filter(date_start__lt=filter_date_end)
+        if filter_is_private:
+            queryset = queryset.filter(is_private=True)
+        if filter_is_available:
+            queryset = queryset.filter(available__gt=0)
+
         return queryset.order_by('-pk')
 
 
