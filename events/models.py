@@ -46,8 +46,6 @@ class Event(models.Model):
         (FULLNESS_FULL, FULLNESS_LEGEND_FULL),
     )
 
-    objects = models.Manager()
-    objects_event_qs = EventQuerySet.as_manager()
     title = models.CharField(max_length=200, blank=True, default='', verbose_name='Название')
     description = models.TextField(blank=True, default='', verbose_name='Описание')
     date_start = models.DateTimeField(verbose_name='Дата начала')
