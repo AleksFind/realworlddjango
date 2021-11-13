@@ -39,7 +39,7 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.event_qs()
+        queryset = queryset.event_qs(self)
         form = EventFilterForm(self.request.GET)
         if form.is_valid():
             filter_category = form.cleaned_data['category']
