@@ -74,7 +74,8 @@ class EventUpdateView(PermissionRequiredMixin, UpdateView):
     form_class = EventUpdateForm
 
     def get_queryset(self):
-        queryset = Event.objects_event_qs.event_qs()
+        queryset = super().get_queryset()
+        queryset = queryset.event_qs()
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -108,7 +109,8 @@ class EventDetailView(DetailView):
 
     def get_queryset(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
-        queryset = Event.objects_event_qs.event_qs().filter(pk=pk)
+        queryset = super().get_queryset()
+        queryset = queryset.event_qs().filter(pk=pk)
         return queryset
 
 
