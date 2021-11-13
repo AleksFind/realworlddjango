@@ -41,7 +41,7 @@
                                         дата: <strong>{{ event.date_start|date:"d.m.Y в H:i" }}</strong>
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
-                                        <form action="{% url 'events:enroll_create' %}" method="post" class="me-2">
+                                        <form action="{% url 'events:event_enroll' %}" method="post" class="me-2">
                                         {% csrf_token %}
                                             {{enroll_form}}
                                             <button data-test="enroll"
