@@ -1,100 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
+{% extends "__base.html" %}
 {% load static %}
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <title>Real World Django - событие Субботник во вторник</title>
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <!-- Project style -->
-    <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
+{% load realworlddjangotags %}
+{% block title %}Событие {{event.title}}{% endblock %}
 
+{% block content %}
 <div class="vertical-layout">
 
-    <!-- Start LEFT_MENU -->
-    <div class="leftbar">
-        <div class="logobar">
-            <a href="#" class="logo logo-large">
-                <img src="/assets/images/svg-icon/logo.svg" alt="logo" style="height: 40px">
-            </a>
-        </div>
-        <ul class="vertical-menu" id="vertical-menu">
-            <li class="vertical-menu-item">
-                <span>Главное</span>
-                <ul class="vertical-submenu">
-                    <li><a href="{% url 'events:event_list' %}">События</a></li>
-                    <li><a href="mail.html">Подписчики</a></li>
-                </ul>
-            </li>
-            <li class="vertical-menu-item">
-                <span>Аккаунт</span>
-                <ul class="vertical-submenu">
-                    <li><a href="profile.html">Мой аккаунт</a></li>
-                    <li><a href="#">Изменить пароль</a></li>
-                    <li><a href="#">Сбросить пароль</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <!-- menu for mobile -->
-    <div class="topbar-mobile">
-        <div class="row align-items-center">
-            <div class="col-md-12">
-                <div class="mobile-logobar" style="max-width: 40px">
-                    <a href="#" class="mobile-logo">
-                        <img src="/assets/images/svg-icon/logo.svg" class="img-fluid" alt="logo">
-                    </a>
-                </div>
-                <div class="mobile-togglebar">
-                    <ul class="list-inline mb-0">
-                        <li class="list-inline-item">
-                            <div class="menubar">
-                                <a class="menu-hamburger" href="#" id="menu-hamburger">
-                                    <img src="/assets/images/svg-icon/collapse.svg"
-                                         class="img-fluid menu-hamburger-collapse"
-                                         alt="collapse">
-                                    <img src="/assets/images/svg-icon/close.svg"
-                                         class="img-fluid menu-hamburger-close"
-                                         alt="close">
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="d-md-none" style="height: 90px"></div>
-    <!-- End LEFT_MENU -->
-
+   {% include "snippets/_left_menu.html"%}
     <!-- Start MAIN_CONTAINER -->
     <div class="rightbar">
-
-        <!-- Start TOP_BAR -->
-        <div class="container-fluid bg-white py-3">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto text-center ms-4">
-                    <h4>Real World Django</h4>
-                </div>
-                <div class="col-auto text-center me-4">
-                   {% if user.is_authenticated %}
-                        <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
-                    {% else %}
-                        <a href="#" class="btn btn-outline-primary">Войти</a>
-                        <a href="#" class="btn btn-primary">Регистрация</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <!-- End TOP_BAR -->
-
+        {% include "snippets/_top_bar.html"%}
         <!-- Start CONTAINER_BAR -->
         <div class="container-fluid mt-3">
             <div class="row">
@@ -103,7 +18,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-6 col-xl-5 mb-4">
-                                    <img src={{event.logo_url}} class="img-fluid" alt="event">
+                                    <img src="{{event.logo_url}}" class="img-fluid" alt="event">
                                 </div>
                                 <div class="col-lg-6 col-xl-7">
                                     {%if event.is_private%}
@@ -113,7 +28,7 @@
                                     {% if event.rate %}
                                     <p data-test="event_rate" class="badge bg-warning">{{event.rate}}/5</p>
                                     {% else %}
-                                    <p data-test="event_rate" class="badge bg-warning">Оценок ещё нет!</p>
+                                    <p data-test="event_rate" class="badge bg-warning">Оценок еще нет!</p>
                                     {% endif %}
                                     <h5 data-test="event_category" class="mt-3">{{event.category}}</h5>
                                     <p data-test="event_description" class="my-4">{{event.description}}</p>
@@ -126,25 +41,42 @@
                                         дата: <strong>{{ event.date_start|date:"d.m.Y в H:i" }}</strong>
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
-                                        <form action="#" method="post" class="me-2">
-                                            <button data-test="enroll"
+                                        <form action="{% url 'events:enroll_create' %}" method="post" class="me-2">
+                                        {% csrf_token %}
+                                            {{enroll_form}}
+                                             <button data-test="enroll"
                                                     type="submit"
                                                     class="btn btn-success"
-                                                   {%if event.get_places_left == 0 %}
-                                                        disabled>
-                                                        Мест нет
+                                                    {% if user in event|get_enroll_user %}
+                                                                disabled>
+                                                                Вы записаны
                                                     {% else %}
-                                                        >Записаться
+                                                                    {%if event.get_places_left == 0 %}
+                                                                        disabled>
+                                                                        Мест нет
+                                                                    {% else %}
+                                                                        >Записаться
+                                                                    {% endif %}
+                                                    {%endif%}
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'events:event_update' event.pk %}" class="btn btn-primary me-2">
+                                           <i class="bi bi-pencil-square"></i>Изменить
+                                        </a>
+                                        <form action="{% url 'events:event_add_to_favorite' %}" method="post">
+                                            {% csrf_token %}
+                                            {{ favorite_form }}
+                                            <button type="submit"  class="btn btn-outline-danger"
+                                                    title="Добавить в избранное"
+                                                    {% if user in event|get_favorite_user %}
+                                                    disabled><i class="bi bi-heart-fill"></i>Событие в избранном
+                                                    {% else %}
+                                                    ><i class="bi bi-heart-fill"></i>Добавить в избранное
                                                     {% endif %}
                                             </button>
                                         </form>
-                                        <a href="#" class="btn btn-primary me-2">
-                                            <i class="bi bi-pencil"></i>Изменить
-                                        </a>
-                                        <button type="button" class="btn btn-outline-danger"
-                                                title="Добавить в избранное">
-                                            <i class="bi bi-heart-fill"></i>
-                                        </button>
+
+
                                     </div>
                                     <div class="card text-center col-xl-6 m-b-30 bg-info-rgba border btn-shadow">
                                         <div class="card-header">
@@ -162,12 +94,12 @@
                                                     осталось мест: {{event.get_places_left}}
                                                 {%endif%}
                                             </p>
-                                            <div class="progress" style="height: 5">
+                                            <div class="progress" style="height: 5px;">
                                                 <div data-test="progressbar"
                                                      class="progress-bar bg-success"
                                                      role="progressbar"
-                                                     style="width:{% widthratio event.display_enroll_count event.participants_number 100 %}%"
-                                                     aria-valuenow="{% widthratio event.display_enroll_count event.participants_number 100 %}%"
+                                                     style="width: {% widthratio event.display_enroll_count event.participants_number 100 %}%"
+                                                     aria-valuenow="{% widthratio event.display_enroll_count event.participants_number 100 %}"
                                                      aria-valuemin="0"
                                                      aria-valuemax="100">
                                                 </div>
@@ -216,21 +148,21 @@
                         </div>
                     </div>
                     {%for review in event.reviews.all|dictsortreversed:"pk"%}
-                    <div class="card my-3">
-                        <div class="card-header pb-0">
-                            <h5 class="card-title">
-                                {{review.user.first_name}} {{review.user.last_name}}
-                                <span class="badge bg-warning">{{review.rate}}</span>
-                            </h5>
+                        <div class="card my-3">
+                            <div class="card-header pb-0">
+                                <h5 class="card-title">
+                                    {{review.user.first_name}} {{review.user.last_name}}
+                                    <span class="badge bg-warning"> {{review.rate}} </span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <img src="{% static 'images/users/men.svg' %}" class="img-fluid me-3" alt="user">
+                                <p data-test="review_text" class="mb-0 d-inline">
+                                    {{review.text}}
+                                </p>
+                                <p data-test="review_date" class="mt-3">{{review.created|date:"d.m.Y" }}</p>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <img src="/assets/images/users/men.svg" class="img-fluid me-3" alt="user">
-                            <p data-test="review_text" class="mb-0 d-inline">
-                                {{review.text}}
-                            </p>
-                            <p data-test="review_date" class="mt-3">{{review.created|date:"d.m.Y" }}</p>
-                        </div>
-                    </div>
                     {%endfor%}
                 </div>
             </div>
@@ -238,12 +170,7 @@
         <!-- End CONTAINER_BAR -->
 
         <!-- Start FOOTER -->
-        <div style="height: 70px"></div>
-        <div class="footerbar">
-            <footer class="footer">
-                <p class="mb-0">© Pumpskill. Real World Django</p>
-            </footer>
-        </div>
+    {% include "snippets/_footer.html"%}
         <!-- End FOOTER -->
 
     </div>
@@ -364,10 +291,4 @@
     </script>
 
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-        crossorigin="anonymous"></script>
-<script src="/assets/js/main.js"></script>
-</body>
-</html>
+{% endblock %}

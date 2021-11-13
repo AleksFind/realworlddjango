@@ -1,159 +1,59 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <title>Real World Django - События</title>
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <!-- Project style -->
-    <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
+{% extends "__base.html" %}
+{% load static %}
+{% block title %}Real World Django - События{% endblock %}
 
+{% block content %}
 <div class="vertical-layout">
 
-    <!-- Start LEFT_MENU -->
-    <div class="leftbar">
-        <div class="logobar">
-            <a href= "#" class="logo logo-large">
-                <img src="/assets/images/svg-icon/logo.svg" alt="logo" style="height: 40px">
-            </a>
-        </div>
-        <ul class="vertical-menu" id="vertical-menu">
-            <li class="vertical-menu-item">
-                <span>Главное</span>
-                <ul class="vertical-submenu">
-                    <li><a href="{% url 'events:event_list' %}">События</a></li>
-                    <li><a href="mail.html">Подписчики</a></li>
-                </ul>
-            </li>
-            <li class="vertical-menu-item">
-                <span>Аккаунт</span>
-                <ul class="vertical-submenu">
-                    <li><a href="profile.html">Мой аккаунт</a></li>
-                    <li><a href="#">Изменить пароль</a></li>
-                    <li><a href="#">Сбросить пароль</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <!-- menu for mobile -->
-    <div class="topbar-mobile">
-        <div class="row align-items-center">
-            <div class="col-md-12">
-                <div class="mobile-logobar" style="max-width: 40px">
-                    <a href="#" class="mobile-logo">
-                        <img src="/assets/images/svg-icon/logo.svg" class="img-fluid" alt="logo">
-                    </a>
-                </div>
-                <div class="mobile-togglebar">
-                    <ul class="list-inline mb-0">
-                        <li class="list-inline-item">
-                            <div class="menubar">
-                                <a class="menu-hamburger" href="#" id="menu-hamburger">
-                                    <img src="/assets/images/svg-icon/collapse.svg"
-                                         class="img-fluid menu-hamburger-collapse"
-                                         alt="collapse">
-                                    <img src="/assets/images/svg-icon/close.svg"
-                                         class="img-fluid menu-hamburger-close"
-                                         alt="close">
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="d-md-none" style="height: 90px"></div>
-    <!-- End LEFT_MENU -->
-
+    {% include "snippets/_left_menu.html" %}
     <!-- Start MAIN_CONTAINER -->
     <div class="rightbar">
-
-        <!-- Start TOP_BAR -->
-        <div class="container-fluid bg-white py-3">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto text-center ms-4">
-                    <h4>События</h4>
-                </div>
-                <div class="col-auto text-center me-4">
-                    {% if user.is_authenticated %}
-                        <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
-                    {% else %}
-                        <a href="#" class="btn btn-outline-primary">Войти</a>
-                        <a href="#" class="btn btn-primary">Регистрация</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <!-- End TOP_BAR -->
-
+        {% include "snippets/_top_bar.html" %}
         <!-- Start CONTAINER_BAR -->
         <div class="container-fluid mt-3">
             <div class="row mb-4">
                 <div class="col">
                     <div class="card shadow">
                         <div class="card-body">
-                            <form>
+                            <form action="." method="get">
                                 <div class="row row-cols-lg-auto g-3 align-items-start">
                                     <div class="col-12">
-                                        <label for="category" class="form-label">Категория:</label>
-                                        <select class="form-select" id="category">
-                                            <option selected="">....................</option>
-                                            <option value="1">Спортивный турнир</option>
-                                            <option value="2">Семейное мероприятие</option>
-                                            <option value="3">Субботник</option>
-                                            <option value="4">Волонтерство</option>
-                                            <option value="5">Night Party</option>
-                                            <option value="6">Дилоги со звездой</option>
-                                        </select>
+                                    {{filter_form.title.label_tag}}
+                                    {{filter_form.title}}
                                     </div>
                                     <div class="col-12">
-                                        <label for="features" class="form-label">Свойства:</label>
-                                        <select class="form-select" multiple="" id="features">
-                                            <option value="1">На открытом воздухе</option>
-                                            <option value="2">Приглашенная знаменитость</option>
-                                            <option value="3">Живая музыка</option>
-                                            <option value="4">Песни у костра</option>
-                                            <option value="5">Подарки участникам</option>
-                                            <option value="6"> Вечерние танцы</option>
-                                        </select>
+                                        {{filter_form.category.label_tag}}
+                                        {{filter_form.category}}
+                                    </div>
+                                    <div class="col-12">
+                                        {{filter_form.features.label_tag}}
+                                        {{filter_form.features}}
                                     </div>
                                     <div class="col-12 d-md-flex">
                                         <div class="mx-1">
-                                            <label for="id_date_start" class="form-label">Дата начала</label>
-                                            <input type="date" class="form-control" id="id_date_start">
+                                            {{filter_form.date_start.label_tag}}
+                                            {{filter_form.date_start}}
                                         </div>
                                         <div class="mx-1">
-                                            <label for="id_date_end" class="form-label">Дата окончания</label>
-                                            <input type="date" class="form-control" id="id_date_end">
+                                            {{filter_form.date_end.label_tag}}
+                                            {{filter_form.date_end}}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 d-md-flex">
                                         <div class="form-check me-3">
-                                            <input class="form-check-input" type="checkbox" value="" id="is_private">
-                                            <label class="form-check-label" for="is_private">
-                                                Private
-                                            </label>
+                                            {{filter_form.is_private.label_tag}}
+                                            {{filter_form.is_private}}
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="is_available">
-                                            <label class="form-check-label" for="is_available">
-                                                Есть места
-                                            </label>
+                                            {{filter_form.is_available.label_tag}}
+                                            {{filter_form.is_available}}
                                         </div>
                                     </div>
                                     <div class="col-12 mt-3">
                                         <button type="submit" class="btn btn-primary">Фильтровать</button>
-                                        <button type="submit" class="btn btn-outline-danger">Сбросить</button>
+                                        <a href="{% url 'events:event_list' %}" class="btn btn-outline-danger">Сбросить</a>
                                     </div>
                                 </div>
                             </form>
@@ -161,67 +61,41 @@
                     </div>
                 </div>
             </div>
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#" data-test="p_start">&laquo;</a></li>
-                <li class="page-item"><a class="page-link" href="#" data-test="p_previous">Previous</a></li>
-                <li class="page-item"><a class="page-link" href="#" data-test="p_1">1</a></li>
-                <li class="page-item active"><a class="page-link" href="#" data-test="p_2">2</a></li>
-                <li class="page-item"><a class="page-link" href="#" data-test="p_3">3</a></li>
-                <li class="page-item"><a class="page-link" href="#" data-test="p_next">Next</a></li>
-                <li class="page-item"><a class="page-link" href="#" data-test="p_end">&raquo;</a></li>
-            </ul>
+            {% include "snippets/_pagination.html" %}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-4">
                 {% for event in event_objects %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">{{event.title}}</h5>
-                            {% if event.is_private %}
-                                <span data-test="is_private" class="badge bg-dark">Private</span>
-                            {% endif %}
-                        </div>
-                        <div class="card-body">
-                            <h3>{{event.display_enroll_count|default:"0"}} из {{event.participants_number}}</h3>
-                            <p>участников</p>
-                            <ul class="py-2">
-                                {% for feature in event.features.all %}
-                                    <li>{{feature}}</li>
-                                {% endfor %}
-                            </ul>
-                            <p>
-                                дата: <strong data-test="date_start">{{ event.date_start|date:"d.m.Y в H:i" }}</strong>
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{{event.get_absolute_url}}" class="btn btn-success">Смотреть</a>
-                            <a href="event_update.html" class="btn btn-outline-primary" title="Изменить">
-                                <i class="bi bi-pencil-square"></i>Изменить
-                            </a>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">{{event.title}}</h5>
+                                {% if event.is_private %}
+                                   <span data-test="is_private" class="badge bg-dark">Private</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h3>{{event.display_enroll_count|default:"0"}} из {{event.participants_number}}</h3>
+                                <p>участников</p>
+                                <ul class="py-2">
+                                    {% for feature in event.features.all %}
+                                        <li>{{feature}}</li>
+                                    {% endfor %}
+                                </ul>
+                                <p class="text-black">дата: <strong data-test="date_start">{{ event.date_start|date:"d.m.Y в H:i" }}</strong></p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{event.get_absolute_url}}" class="btn btn-success">Смотреть</a>
+                                <a href="{{event.get_update_url}}" class="btn btn-outline-primary" title="Изменить">
+                                    <i class="bi bi-pencil-square"></i>Изменить
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% endfor %}
             </div>
         </div>
         <!-- End CONTAINER_BAR -->
-
-        <!-- Start FOOTER -->
-        <div style="height: 70px"></div>
-        <div class="footerbar">
-            <footer class="footer">
-                <p class="mb-0">© Pumpskill. Real World Django</p>
-            </footer>
-        </div>
-        <!-- End FOOTER -->
-
+        {% include "snippets/_footer.html"%}
     </div>
     <!-- End MAIN_CONTAINER -->
-
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-        crossorigin="anonymous"></script>
-<script src="/assets/js/main.js"></script>
-</body>
-</html>
+{% endblock %}
