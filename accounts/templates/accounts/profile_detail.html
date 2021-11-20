@@ -105,13 +105,7 @@
                                         <td data-test="review_text">
                                             {{ review.text|truncatewords:4  }}
                                         </td>
-                                        <td data-test="review_rate">
-                                            {% if review.rate %}
-                                                {{review.rate}}
-                                            {% else %}
-                                                --
-                                            {% endif %}
-                                        </td>
+                                        <td data-test="review_rate">{{review.rate|floatformat|default:"--" }}</td>
                                         <td>
                                         <form action="{{review.get_delete_url}}" method="post">
                                         {% csrf_token %}
