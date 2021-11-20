@@ -17,7 +17,7 @@ from accounts.models import Profile
 class RedirectAuthenticatedUserMixin:
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('mail:index'))
+            return HttpResponseRedirect(reverse_lazy('main:index'))
         return super().get(*args, **kwargs)
 
 
