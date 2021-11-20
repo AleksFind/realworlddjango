@@ -51,6 +51,7 @@
                                         <th scope="col">#</th>
                                         <th scope="col">Событие</th>
                                         <th scope="col">Дата старта</th>
+                                        <th scope="col">Моя оценка</th>
                                         <th scope="col">Отмена записи</th>
                                     </tr>
                                     </thead>
@@ -64,6 +65,7 @@
                                             </a>
                                         </td>
                                         <td data-test="event_start">{{ enroll.event.date_start|date:"d.m.Y" }}</td>
+                                        <td data-test="event_rate">{{ enroll.rate|floatformat|default:"--" }}</td>
                                         <td>
                                         <form action="{{enroll.get_delete_url}}" method="post">
                                         {% csrf_token %}
@@ -105,7 +107,7 @@
                                         <td data-test="review_text">
                                             {{ review.text|truncatewords:4  }}
                                         </td>
-                                        <td data-test="review_rate">{{review.rate|floatformat|default:"--" }}</td>
+                                        <td data-test="review_rate">{{review.rate}}</td>
                                         <td>
                                         <form action="{{review.get_delete_url}}" method="post">
                                         {% csrf_token %}
