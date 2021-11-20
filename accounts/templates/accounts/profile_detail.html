@@ -65,7 +65,7 @@
                                             </a>
                                         </td>
                                         <td data-test="event_start">{{ enroll.event.date_start|date:"d.m.Y" }}</td>
-                                        <td data-test="event_rate">{{ enroll.rate|floatformat|default:"--" }}</td>
+                                        <td data-test="event_rate">{{ enroll.get_rate|floatformat|default:"--" }}</td>
                                         <td>
                                         <form action="{{enroll.get_delete_url}}" method="post">
                                         {% csrf_token %}
