@@ -1,7 +1,7 @@
 {% load static %}
     <div class="leftbar">
         <div class="logobar">
-            <a href="#" class="logo logo-large">
+            <a href="{% url 'main:index'%}" class="logo logo-large">
                 <img src="{% static 'images/svg-icon/logo.svg' %}" alt="logo" style="height: 40px">
             </a>
         </div>
@@ -14,17 +14,12 @@
                 </ul>
             </li>
             <li class="vertical-menu-item">
-            {% if user.is_authenticated %}
-                <span>Аккаунт: {{ user.get_username }}</span>
-                <ul class="vertical-submenu">
-                <li><a href="#">Мой аккаунт</a></li>
-                <li><a href="#">Изменить пароль</a></li>
-                <li><a href="#">Сбросить пароль</a></li>
-                <li><a href="#" >Выйти</a></li>
-            {% else %}
-                <span>Аккаунт: - </span>
-            {% endif %}
-                </ul>
+             <span>Аккаунт</span>
+            <ul class="vertical-submenu">
+                <li><a href="{% url 'accounts:profile' %}">Мой аккаунт</a></li>
+                <li><a href="{% url 'accounts:password_change' %}">Изменить пароль</a></li>
+                <li><a href="{% url 'accounts:password_reset' %}">Сбросить пароль</a></li>
+            </ul>
             </li>
         </ul>
     </div>

@@ -26,6 +26,9 @@ urlpatterns = [
 
 urlpatterns += [
     path('events/', include('events.urls')),
+    path('', include('main.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('allauth/accounts/', include('allauth.urls')),
 ]
 
 # API URLs

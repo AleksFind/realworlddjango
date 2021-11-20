@@ -6,7 +6,7 @@
 {% block content %}
 <div class="vertical-layout">
 
-   {% include "snippets/_left_menu.html"%}
+    {% include "snippets/_left_menu.html"%}
     <!-- Start MAIN_CONTAINER -->
     <div class="rightbar">
         {% include "snippets/_top_bar.html"%}
@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="col-lg-6 col-xl-7">
                                     {%if event.is_private%}
-                                        <p data-test="is_private" class="badge bg-dark">Private</p>
+                                    <p data-test="is_private" class="badge bg-dark">Private</p>
                                     {%endif%}
                                     <h2 data-test="event_title">{{event.title}}</h2>
                                     {% if event.rate %}
@@ -34,7 +34,7 @@
                                     <p data-test="event_description" class="my-4">{{event.description}}</p>
                                     <ul>
                                         {% for feature in event.features.all %}
-                                            <li data-test="feature">{{feature}}</li>
+                                        <li data-test="feature">{{feature}}</li>
                                         {% endfor %}
                                     </ul>
                                     <p>
@@ -42,37 +42,37 @@
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
                                         <form action="{% url 'events:event_enroll' %}" method="post" class="me-2">
-                                        {% csrf_token %}
+                                            {% csrf_token %}
                                             {{enroll_form}}
                                             <button data-test="enroll"
                                                     type="submit"
                                                     class="btn btn-success"
                                                     {% if user in event|get_enroll_user %}
-                                                                disabled>
-                                                                Вы записаны
-                                                    {% else %}
-                                                                    {%if event.get_places_left == 0 %}
-                                                                        disabled>
-                                                                        Мест нет
-                                                                    {% else %}
-                                                                        >Записаться
-                                                                    {% endif %}
-                                                    {%endif%}
+                                                    disabled>
+                                                Вы записаны
+                                                {% else %}
+                                                {%if event.get_places_left == 0 %}
+                                                disabled>
+                                                Мест нет
+                                                {% else %}
+                                                >Записаться
+                                                {% endif %}
+                                                {%endif%}
                                             </button>
-                                            </form>
+                                        </form>
                                         <a href="{% url 'events:event_update' event.pk %}" class="btn btn-primary me-2">
-                                           <i class="bi bi-pencil-square"></i>Изменить
+                                            <i class="bi bi-pencil-square"></i>Изменить
                                         </a>
                                         <form action="{% url 'events:event_add_to_favorite' %}" method="post">
                                             {% csrf_token %}
                                             {{ favorite_form }}
-                                            <button type="submit"  class="btn btn-outline-danger"
+                                            <button type="submit" class="btn btn-outline-danger"
                                                     title="Добавить в избранное"
                                                     {% if user in event|get_favorite_user %}
                                                     disabled><i class="bi bi-heart-fill"></i>Событие в избранном
-                                                    {% else %}
-                                                    ><i class="bi bi-heart-fill"></i>Добавить в избранное
-                                                    {% endif %}
+                                                {% else %}
+                                                ><i class="bi bi-heart-fill"></i>Добавить в избранное
+                                                {% endif %}
                                             </button>
                                         </form>
 
@@ -85,13 +85,14 @@
                                         <div class="card-body">
                                             <i class="bi bi-emoji-smile text-success" style="font-size: 3rem"></i>
                                             <h4 data-test="enroll_count">
-                                                {{event.display_enroll_count|default:"0"}} из {{event.participants_number}}
+                                                {{event.display_enroll_count|default:"0"}} из
+                                                {{event.participants_number}}
                                             </h4>
                                             <p data-test="places_left">
                                                 {%if event.get_places_left == 0 %}
-                                                    осталось мест: мест нет
+                                                осталось мест: мест нет
                                                 {%else%}
-                                                    осталось мест: {{event.get_places_left}}
+                                                осталось мест: {{event.get_places_left}}
                                                 {%endif%}
                                             </p>
                                             <div class="progress" style="height: 5px;">
@@ -148,21 +149,25 @@
                         </div>
                     </div>
                     {%for review in event.reviews.all|dictsortreversed:"pk"%}
-                        <div class="card my-3">
-                            <div class="card-header pb-0">
-                                <h5 class="card-title">
-                                    {{review.user.first_name}} {{review.user.last_name}}
-                                    <span class="badge bg-warning"> {{review.rate}} </span>
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <img src="{% static 'images/users/men.svg' %}" class="img-fluid me-3" alt="user">
-                                <p data-test="review_text" class="mb-0 d-inline">
-                                    {{review.text}}
-                                </p>
-                                <p data-test="review_date" class="mt-3">{{review.created|date:"d.m.Y" }}</p>
-                            </div>
+                    <div class="card my-3">
+                        <div class="card-header pb-0">
+                            <h5 class="card-title">
+                                {% if review.user.get_full_name %}
+                                    {{ review.user.get_full_name}}
+                                {% else %}
+                                    {{ review.user.username}}
+                                {% endif %}
+                                <span class="badge bg-warning"> {{review.rate}} </span>
+                            </h5>
                         </div>
+                        <div class="card-body">
+                            <img src="{% static 'images/users/men.svg' %}" class="img-fluid me-3" alt="user">
+                            <p data-test="review_text" class="mb-0 d-inline">
+                                {{review.text}}
+                            </p>
+                            <p data-test="review_date" class="mt-3">{{review.created|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
                     {%endfor%}
                 </div>
             </div>
@@ -170,7 +175,7 @@
         <!-- End CONTAINER_BAR -->
 
         <!-- Start FOOTER -->
-    {% include "snippets/_footer.html"%}
+        {% include "snippets/_footer.html"%}
         <!-- End FOOTER -->
 
     </div>
@@ -288,6 +293,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", ready)
+
     </script>
 
 </div>

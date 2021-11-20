@@ -12,4 +12,7 @@ urlpatterns = [
     path('event_create/', views.EventCreateView.as_view(), name='event_create'),
     path('event_enroll/', views.EnrollCreateView.as_view(), name='event_enroll'),
     path('event_add_to_favorite/', views.EventAddToFavoriteView.as_view(), name='event_add_to_favorite'),
+    path('enroll_delete/<int:pk>/', views.EnrollDeleteView.as_view(), name='enroll_delete'),
+    path('review_delete/<int:pk>/', views.ReviewDeleteView.as_view(), name='review_delete'),
+    path('favorite_delete/<int:pk>/', views.FavoriteDeleteView.as_view(), name='favorite_delete'),
     ]

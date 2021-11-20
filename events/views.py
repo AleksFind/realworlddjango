@@ -187,6 +187,60 @@ class EventAddToFavoriteView(PermissionRequiredMixin, CreateView):
         return HttpResponseRedirect(redirect_url)
 
 
+class EnrollDeleteView(LoginRequiredMixin, DeleteView):
+    model = Enroll
+    template_name = 'accounts/profile.html'
+    success_url = reverse_lazy('accounts:profile')
+    login_url = 'account_login'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object()
+        if not obj.user == self.request.user:
+            raise Http404
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        result = super().delete(request, *args, **kwargs)
+        messages.success(request, f'Запись на событие {self.object.event} удалена')
+        return result
+
+
+class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Review
+    template_name = 'accounts/profile.html'
+    success_url = reverse_lazy('accounts:profile')
+    login_url = 'account_login'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object()
+        if not obj.user == self.request.user:
+            raise Http404
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        result = super().delete(request, *args, **kwargs)
+        messages.success(request, f'Отзыв на событие {self.object.event} удален')
+        return result
+
+
+class FavoriteDeleteView(LoginRequiredMixin, DeleteView):
+    model = Favorite
+    template_name = 'accounts/profile.html'
+    success_url = reverse_lazy('accounts:profile')
+    login_url = 'account_login'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object()
+        if not obj.user == self.request.user:
+            raise Http404
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        result = super().delete(request, *args, **kwargs)
+        messages.success(request, f'Событие {self.object.event} удалено из избранного')
+        return result
+
+
 @require_POST
 def create_review(request):
     data = {

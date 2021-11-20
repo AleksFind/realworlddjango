@@ -131,7 +131,10 @@ class Enroll(models.Model):
         verbose_name_plural = 'Записи'
 
     def __str__(self):
-        return self.event
+        return f'{self.event} - {self.user}'
+
+    def get_delete_url(self):
+        return reverse('events:enroll_delete', args=[str(self.pk)])
 
     @property
     def get_rate(self):
@@ -151,6 +154,9 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+
+    def get_delete_url(self):
+        return reverse('events:review_delete', args=[str(self.pk)])
 
 
 class Favorite(models.Model):

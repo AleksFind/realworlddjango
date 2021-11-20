@@ -7,7 +7,11 @@
         <div class="card-body">
             <!-- Start Review item -->
             <h5 class="me-2" data-test="review_user">
-                {{ review.user.first_name }} {{ review.user.last_name }}
+            {% if  review.user.get_full_name %}
+                {{ review.user.get_full_name}}
+            {% else %}
+                {{ review.user.username}}
+            {% endif %}
                 <span class="badge bg-warning" data-test="review_rate" > {{ review.rate }}</span>
             </h5>
             <p class="my-3" data-test="review_text">{{ review.text }}</p>

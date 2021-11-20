@@ -1,0 +1,164 @@
+{% extends "__base.html" %}
+{% load static %}
+{% block title %}Создание события{% endblock %}
+
+{% block content %}
+
+<!-- Start MAIN_CONTAINER -->
+<div class="rightbar">
+
+    {% with "Профайл" as header %}
+    {% include "snippets/_top_bar.html" %}
+    {% endwith %}
+
+    <!-- Start CONTAINER_BAR -->
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col">
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        <img src="{% static 'images/users/men.svg' %}" class="img-fluid" alt="profile"
+                             style="width: 250px">
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Основная информация</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="." method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }} {{ field }}
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary">
+                                Сохранить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                 <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Мои события</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Событие</th>
+                                        <th scope="col">Дата старта</th>
+                                        <th scope="col">Отмена записи</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for enroll in profile_objects.user.enrolls.all %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>
+                                            <a href="{{enroll.event.get_absolute_url}}" data-test="event">
+                                               {{ enroll.event }}
+                                            </a>
+                                        </td>
+                                        <td data-test="event_start">{{ enroll.event.date_start|date:"d.m.Y" }}</td>
+                                        <td>
+                                        <form action="{{enroll.get_delete_url}}" method="post">
+                                        {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">Отменить запись</button>
+                                        </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+               <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Мои отзывы</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Событие</th>
+                                        <th scope="col">Отзыв</th>
+                                        <th scope="col">Оценка</th>
+                                        <th scope="col">Удаление отзыва</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for review in profile_objects.user.reviews.all %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>
+                                            <a href="{{review.event.get_absolute_url}}" data-test="review_event">
+                                                {{ review.event }}
+                                            </a>
+                                        </td>
+                                        <td data-test="review_text">
+                                            {{ review.text|truncatewords:4  }}
+                                        </td>
+                                        <td data-test="review_rate">{{ review.rate}}</td>
+                                        <td>
+                                        <form action="{{review.get_delete_url}}" method="post">
+                                        {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">Удалить отзыв</button>
+                                        </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                 <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Избранные события</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Событие</th>
+                                        <th scope="col">Удаление из избранного</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for favorite in profile_objects.user.favorites.all %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>
+                                            <a href="{{favorite.event.get_absolute_url}}" data-test="review_event">
+                                                {{ favorite.event }}
+                                            </a>
+                                        <td>
+                                        <form action="{{favorite.get_delete_url}}" method="post">
+                                        {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">Удалить из избранного</button>
+                                        </form>
+                                        </td>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <!-- End CONTAINER_BAR -->
+    {% include "snippets/_footer.html"%}
+</div>
+<!-- End MAIN_CONTAINER -->
+
+{% endblock %}

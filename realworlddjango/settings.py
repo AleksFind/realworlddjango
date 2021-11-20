@@ -13,6 +13,8 @@ import environ
 
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -44,7 +46,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'events'
+    # Extra Django apps
+    'django.contrib.sites',
+
+    # Third Party apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.vk',
+
+    # Project apps
+    'main.apps.MainConfig',
+    'events.apps.EventsConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -62,7 +76,7 @@ ROOT_URLCONF = 'realworlddjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates','templates/allauth'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -140,5 +154,38 @@ MEDIA_URL = '/assets/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = reverse_lazy('accounts:sign_in')
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 import django_heroku
 django_heroku.settings(locals())
+
+AUTHENTICATION_BACKENDS = (
+    # Необходим для входа в административную часть сайта под username для админа. Должен быть независимо от 'allauth'
+    'django.contrib.auth.backends.ModelBackend',
+
+    # Специальные методы аутентификации 'allauth', такие как вход в систему по электронной почте
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
