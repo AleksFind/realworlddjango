@@ -73,7 +73,7 @@
                                 {% endif %}
                             </div>
                             <div class="card-body">
-                                <h3>{{event.display_enroll_count|default:"0"}} из {{event.participants_number}}</h3>
+                                <h3>{{event.count|default:"0"}} из {{event.participants_number}}</h3>
                                 <p>участников</p>
                                 <ul class="py-2">
                                     {% for feature in event.features.all %}

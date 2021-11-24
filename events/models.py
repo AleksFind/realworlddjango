@@ -1,7 +1,8 @@
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.urls import reverse
+
 from events.managers import EventQuerySet
 
 
@@ -21,7 +22,7 @@ class Category(models.Model):
     title = models.CharField(max_length=90, blank=True, default='', verbose_name='Категория')
 
     def display_event_count(self):
-        return len(self.events.all())
+        return self.events.count()
 
     display_event_count.short_description = 'Количество событий'
 
@@ -57,7 +58,7 @@ class Event(models.Model):
     logo = models.ImageField(blank=True, null=True)
 
     def display_enroll_count(self):
-        return len(self.enrolls.all())
+        return self.get_enroll_count()
 
     display_enroll_count.short_description = 'Количество записей'
 
@@ -135,12 +136,6 @@ class Enroll(models.Model):
 
     def get_delete_url(self):
         return reverse('events:enroll_delete', args=[str(self.pk)])
-
-    @property
-    def get_rate(self):
-        review = Review.objects.filter(event=self.event).filter(user=self.user).values_list('rate',flat=True).first()
-        list = review if review else None
-        return list
 
 
 class Review(models.Model):

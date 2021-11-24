@@ -4,11 +4,6 @@ register = template.Library()
 
 
 @register.filter
-def get_item(dictionary, key):
-    return dict(dictionary).get(key)
-
-
-@register.filter
 def get_enroll_user(event):
     users = []
     for enroll in event.enrolls.all():

@@ -3,11 +3,12 @@
 {% block title %}Создание события{% endblock %}
 
 {% block content %}
+<div class="vertical-layout">
 
+    {% include "snippets/_left_menu.html" %}
 <!-- Start MAIN_CONTAINER -->
 <div class="rightbar">
-
-    {% with "Профайл" as header %}
+    {% with "Профайл" as heading %}
     {% include "snippets/_top_bar.html" %}
     {% endwith %}
 

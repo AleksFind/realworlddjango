@@ -1,18 +1,18 @@
-from allauth.account.models import EmailAddress
 from allauth.account.views import LoginView
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 
 from accounts.forms import (ProfileUpdateForm, CustomPasswordResetForm, CustomSetPasswordForm, CustomUserCreationForm,
                             CustomAuthenticationForm)
 from accounts.models import Profile
+
 
 class RedirectAuthenticatedUserMixin:
     def get(self, *args, **kwargs):

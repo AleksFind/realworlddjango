@@ -1,9 +1,6 @@
 {% extends "__base.html" %}
 {% load static %}
-{% block title %}
-    {% if event %} Редактирование события
-    {% else %} Добавление события
-    {% endif %}{% endblock %}
+{% block title %}Создание события{% endblock %}
 {% block content %}
 <div class="vertical-layout">
     {% include "snippets/_left_menu.html"%}
@@ -19,9 +16,7 @@
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h3 class="mb-0">
-                                    {% if event %} Редактирование события {{ event.title }}
-                                    {% else %} Добавление нового события
-                                    {% endif %}
+                                     {{ event.title|default:"Создание события" }}
                                 </h3>
                             </div>
                             {{ form.non_field_errors }}

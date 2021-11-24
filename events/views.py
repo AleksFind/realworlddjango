@@ -1,7 +1,8 @@
 import datetime
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Avg, F, Q, DecimalField, Prefetch
 from django.http import JsonResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -39,7 +40,7 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.event_qs()
+        queryset = queryset.event_qs1()
         form = EventFilterForm(self.request.GET)
         if form.is_valid():
             filter_category = form.cleaned_data['category']
@@ -75,7 +76,15 @@ class EventUpdateView(PermissionRequiredMixin, UpdateView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.event_qs()
+        queryset = queryset.prefetch_related('reviews__user')
+
+        enrolls = Enroll.objects.annotate(
+            rate=Avg('event__reviews__rate',
+                     filter=Q(event__reviews__user=F('user')),
+                     output_field=DecimalField())
+        ).select_related('user').all()
+        prefetch_enrolls = Prefetch('enrolls', enrolls)
+        queryset = queryset.prefetch_related(prefetch_enrolls)
         return queryset
 
     def get_context_data(self, **kwargs):
