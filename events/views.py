@@ -64,7 +64,7 @@ class EventListView(ListView):
             if filter_private:
                 queryset = queryset.filter(is_private=filter_private)
             if filter_available:
-                queryset = queryset.filter(get_places_left__gt=0)
+                queryset = queryset.filter(count__lt=F('participants_number'))
 
         return queryset.order_by('-pk')
 
