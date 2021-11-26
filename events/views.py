@@ -64,7 +64,7 @@ class EventListView(ListView):
             if filter_private:
                 queryset = queryset.filter(is_private=filter_private)
             if filter_available:
-                queryset = queryset.filter(places_left__gt=0)
+                queryset = queryset.filter(get_places_left__gt=0)
 
         return queryset.order_by('-pk')
 
