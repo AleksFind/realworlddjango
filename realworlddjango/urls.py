@@ -29,11 +29,13 @@ urlpatterns += [
     path('', include('main.urls')),
     path('accounts/', include('accounts.urls')),
     path('allauth/accounts/', include('allauth.urls')),
+    path('mail/', include('mail.urls')),
 ]
 
 # API URLs
 urlpatterns += [
     path('api/events/', include('events.urls_api')),
+    path('api/mail/', include('mail.urls_api')),
 ]
 
 if settings.DEBUG:
